@@ -15,7 +15,7 @@ const columnDef = [
     },
     {
       accessorKey: "price",
-      header: () => <div className="text-right">Price</div>,
+      header: () => <div className="text-right">Price Purchased</div>,
       cell: ({row}) => {
         const amount = parseFloat(row.getValue("price") / 100)
         const formatted = new Intl.NumberFormat("en-US", {
@@ -72,10 +72,14 @@ const columnDef = [
 
 export default function User() {
     const user = useStockStore(state => state.user)
+    const stocks = useStockStore(state => state.stocks)
     const fetchUser = useStockStore(state => state.fetchUser)
     const pendingTrades = useStockStore(state => state.pendingTrades)
     const fetchPendingTrades = useStockStore(state => state.fetchPendingTrades)
-    
+    let totalValue = 0;
+    if (user?.stocks && stocks) {
+      totalValue = user.stocks.reduce((acc, val) => acc + (val.amount * stocks.find(s => s.type == val.type).price), 0);
+    }
     
     if (!user) {
       return (
@@ -84,6 +88,8 @@ export default function User() {
     }
     const ownedStocks = user.stocks
 
+  
+    
 
     async function refreshLists() {
       fetchUser()
@@ -107,6 +113,7 @@ export default function User() {
       <div className="w-50/100 m-auto">
         <h1 className="text-lg mt-2">{user.name}</h1>
         <p>Capital: ${user.capital / 100}</p>
+        <p>Portfolio Value: ${totalValue / 100}</p>
         <DataTable columns={columnDef} data={ownedStocks ?? []} />
         <h2>Pending Orders</h2>
         <DataTable columns={pendingColumnDef} data={pendingTrades ?? []} />
