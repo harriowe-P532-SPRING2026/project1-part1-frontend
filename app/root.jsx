@@ -10,6 +10,7 @@ import {
 import "./app.css";
 import { useEffect } from "react";
 import useStockStore from "./lib/stockStore";
+import Header from "./components/Header";
 
 export const links = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -44,14 +45,23 @@ export function Layout({ children }) {
 
 export default function App() {
   const fetchUser = useStockStore((state) => state.fetchUser)
+  const fetchStocks = useStockStore((state) => state.fetchStocks)
   const establishWebSocket = useStockStore((state) => state.establishWebSocket)
   
   useEffect(() => {
     fetchUser()
     establishWebSocket()
+    fetchStocks()
   }, [])
   
-  return <Outlet />;
+  return (
+    <div>
+      <Header />
+      <div className="w-80/100 m-auto">
+        <Outlet />
+      </div>
+    </div>
+  );
 }
 
 export function ErrorBoundary({ error }) {

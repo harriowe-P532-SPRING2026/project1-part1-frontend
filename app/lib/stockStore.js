@@ -9,8 +9,12 @@ const useStockStore = create((set, get) => ({
   webSocketMessageHandler: (event) => {    
     try {
       const json = JSON.parse(event.data)
-      set({stocks: json})
       console.log(json)
+      if (json.tag == "stocks") {
+        set({stocks: json.content})
+      } else if (json.tag == "notification") {
+        set({notification: json.content})
+      }
     } catch (error) {
       console.error(error)
     }
@@ -38,7 +42,7 @@ const useStockStore = create((set, get) => ({
     }
   },
   fetchTrades: async () => {
-    const response = await fetch(`${host}/trades?userId=${get().user.id}`)
+    const response = await fetch(`${host}/trades?userId=${get().user.id ?? 1}`)
     if (!response.ok) {
       console.error("Error fetching trades")
     } else {
@@ -48,7 +52,7 @@ const useStockStore = create((set, get) => ({
     }
   },
   fetchPendingTrades: async () => {
-    const response = await fetch(`${host}/trades/pending?userId=${get().user.id}`)
+    const response = await fetch(`${host}/trades/pending?userId=${get().user.id ?? 1}`)
     if (!response.ok) {
       console.error("Error fetching pending trades")
     } else {
@@ -58,7 +62,21 @@ const useStockStore = create((set, get) => ({
     }
   },
   queueTrade: async (tradeRequest) => {
-    
+    tradeRequest["userId"] = get().user.id;
+    const response = await fetch(`${host}/stock`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(tradeRequest)
+    });
+    if (!response.ok) {
+      console.error("Error submitting stock request")
+      return false;
+    } else {
+      const json = await response.json();
+      return json;
+    }
   },
   fetchUser: async () => {
     const response = await fetch(`${host}/user/1`, {
@@ -71,6 +89,10 @@ const useStockStore = create((set, get) => ({
       console.log(user)
       set({ user: user });
     }
+  },
+  notification: null,
+  clearNotification: () => {
+    set({notification: null})
   }
 }))
 

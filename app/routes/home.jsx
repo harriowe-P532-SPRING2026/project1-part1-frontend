@@ -1,3 +1,4 @@
+import StockDisplay from "../components/StockDisplay";
 import { Welcome } from "../welcome/welcome";
 
 export function meta({}) {
@@ -8,5 +9,5 @@ export function meta({}) {
 }
 
 export default function Home() {
-  return <h1>Hello World!</h1>;
+  return <StockDisplay />;
 }
