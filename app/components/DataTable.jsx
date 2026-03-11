@@ -13,6 +13,8 @@ import {
     TableRow,
   } from "@/components/ui/table"
    
+
+  // Sorry I forgot to say that this code here was from my component framework (shadcn) : https://ui.shadcn.com/docs/components/radix/data-table
    
   export function DataTable({
     columns,
