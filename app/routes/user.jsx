@@ -17,7 +17,7 @@ import {
   ComboboxValue,
 } from "@/components/ui/combobox"
 
-const possibleNotificationPreferences = ["dashboard", "sms", "email", "console"]
+const possibleNotificationPreferences = ["sms", "email", "console", "dashboard"]
 const users = [
   {id: 1, name: "Trader 1"},
   {id: 2, name: "Trader 2"},
@@ -99,7 +99,8 @@ export default function User() {
     const fetchPendingTrades = useStockStore(state => state.fetchPendingTrades)
     const [notificationPrefs, setNotificationPrefs] = useState(user?.notificationPreferences ?? []);
     const submitNotificationPreferences = useStockStore(state => state.submitNotificationPreferences)
-    const establishWebSocket = useState(state => state.establishWebSocket);
+    const establishWebSocket = useStockStore(state => state.establishWebSocket);
+    const clearNotifications = useStockStore(state => state.clearNotifications);
     const [selectedUser, setSelectedUser] = useState("Trader 1")
 
     const notificationPrefsKey = JSON.stringify(user?.notificationPreferences);
@@ -112,18 +113,19 @@ export default function User() {
     async function refreshLists() {
       fetchUser()
       fetchPendingTrades()
-      
     }
 
     useEffect(() => {
-      fetchUser()
-      fetchPendingTrades()
+      fetchUser();
+      fetchPendingTrades();
 
-      setInterval(refreshLists, 5000);
+      const timer = setTimeout(clearNotifications, 5000);
+      const interval = setInterval(refreshLists, 5000);
+      return () => { clearInterval(interval); clearTimeout(timer); };
     }, [])
 
     useEffect(() => {
-      if (notificationPrefs != user.notificationPreferences && user != null) {
+      if (JSON.stringify(notificationPrefs) !== JSON.stringify(user.notificationPreferences) && user != null) {
         console.log("Submitting new notification preferences")
         submitNotificationPreferences(notificationPrefs)
       }

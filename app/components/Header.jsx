@@ -5,6 +5,7 @@ import { Link } from 'react-router'
 export default function Header() {
     const user = useStockStore((state) => state.user)
     const notification = useStockStore((state) => state.notification)
+    const notifications = useStockStore((state) => state.notifications)
     const clearNotification = useStockStore((state) => state.clearNotification)
 
     useEffect(() => {
@@ -28,8 +29,9 @@ export default function Header() {
                 </Link>
             </div>
             <div className="flex">
+                
                 <p className='p-1'>
-                    {notification || "No Notifications"}
+                    {notification ? notification : notifications == 0 ? "No Notifications" : notifications + " Notifications"}
                 </p>
                 <Link to={"/user"} className='p-1'>
                 {user?.name ?? "Logged Out"}

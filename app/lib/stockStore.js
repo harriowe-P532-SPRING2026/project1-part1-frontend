@@ -15,14 +15,14 @@ const useStockStore = create((set, get) => ({
   webSocketMessageHandler: (event) => {    
     try {
       const json = JSON.parse(event.data)
-      console.log(json)
       if (json.tag == "stocks") {
         set({stocks: json.content})
       } else if (json.tag == "notification") {
-        set({notification: json.content})
+        set({notification: json.content, notifications: get().notifications + 1})
       }
     } catch (error) {
-      console.error(error)
+      const text = event.data;
+      console.log(text);
     }
   },
   setNewUserId: async (new_id) => {
@@ -48,7 +48,7 @@ const useStockStore = create((set, get) => ({
   submitNotificationPreferences: async (preferences) => {
     const user_id = get().user.id;
     if (!user_id) return;
-    console.log(user_id)
+    // console.log(user_id)
     const response = await fetch(`${host}/user/${user_id}/setNoficationPreferences`, {
       method: "POST",
       headers: {
@@ -62,9 +62,10 @@ const useStockStore = create((set, get) => ({
     }
   },
   establishWebSocket: () => {
+    get().webSocket?.close();
     const socket = new WebSocket(webSocketHost);
     socket.addEventListener("open", (event) => {
-      socket.send("1");
+      socket.send(String(get().currentUserId));
     });
     
     socket.addEventListener("message", get().webSocketMessageHandler)
@@ -79,7 +80,7 @@ const useStockStore = create((set, get) => ({
       console.error("Error fetching stocks")
     } else {
       const stocks = await response.json();
-      console.log(stocks);
+      // console.log(stocks);
       set({ stocks });
     }
   },
@@ -89,7 +90,7 @@ const useStockStore = create((set, get) => ({
       console.error("Error fetching trades")
     } else {
       const trades = await response.json();
-      console.log(trades);
+      // console.log(trades);
       set({ trades });
     }
   },
@@ -99,7 +100,7 @@ const useStockStore = create((set, get) => ({
       console.error("Error fetching pending trades")
     } else {
       const trades = await response.json();
-      console.log(trades);
+      // console.log(trades);
       set({ pendingTrades: trades });
     }
   },
@@ -128,11 +129,14 @@ const useStockStore = create((set, get) => ({
       console.error("failed to fetch user")
     } else {
       const user = await response.json();
-      console.log(user)
       set({ user: user });
     }
   },
   notification: null,
+  notifications: 0,
+  clearNotifications: () => {
+    set({notification: null, notifications: 0})
+  },
   clearNotification: () => {
     set({notification: null})
   }
