@@ -1,10 +1,10 @@
 import { create } from 'zustand'
 
-// const host = "https://tradingservice-api.harrisowe.me"
-const host = "http://localhost:8080"
+const host = "https://tradingservice-api.harrisowe.me"
+// const host = "http://localhost:8080"
 
-// const webSocketHost = "wss://tradingservice-api.harrisowe.me/ws"
-const webSocketHost = "ws://localhost:8080/ws"
+const webSocketHost = "wss://tradingservice-api.harrisowe.me/ws"
+// const webSocketHost = "ws://localhost:8080/ws"
 
 
 const useStockStore = create((set, get) => ({
