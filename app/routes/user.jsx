@@ -99,6 +99,7 @@ export default function User() {
     const fetchPendingTrades = useStockStore(state => state.fetchPendingTrades)
     const [notificationPrefs, setNotificationPrefs] = useState(user?.notificationPreferences ?? []);
     const submitNotificationPreferences = useStockStore(state => state.submitNotificationPreferences)
+    const establishWebSocket = useState(state => state.establishWebSocket);
     const [selectedUser, setSelectedUser] = useState("Trader 1")
 
     const notificationPrefsKey = JSON.stringify(user?.notificationPreferences);
@@ -111,6 +112,7 @@ export default function User() {
     async function refreshLists() {
       fetchUser()
       fetchPendingTrades()
+      
     }
 
     useEffect(() => {
@@ -131,7 +133,9 @@ export default function User() {
       async function handleNewUser() {
         const newUserId = users.find(u => u.name == selectedUser).id;
         await setNewUserId(newUserId);
+        await fetchUser();
         await refreshLists();
+        await establishWebSocket();
       }
       handleNewUser()
     }, [selectedUser])
