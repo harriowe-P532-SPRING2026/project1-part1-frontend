@@ -23,6 +23,9 @@ export default function Header() {
                 <Link to={"/trades"} className='p-1'>
                 Trade History
                 </Link>
+                <Link to={"/algorithim"} className='p-1'>
+                Pricing Algorithim
+                </Link>
             </div>
             <div className="flex">
                 <p className='p-1'>
